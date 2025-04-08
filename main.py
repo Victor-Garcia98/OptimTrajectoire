@@ -1,7 +1,6 @@
 import pandas as pd
 import networkx as nx
 import folium
-from shapely.measurement import length
 
 
 class DataLoader:
@@ -17,6 +16,7 @@ class DataLoader:
                                       'Type', 'Source'])
         self.airport_coords = dict(zip(airports['IATA'], zip(airports['Lat'], airports['Lon'])))
         return flight_data
+
 
 class Aircraft:
     def __init__(self):
@@ -163,6 +163,7 @@ class TrajectoryOptimizer:
             cost = nx.dijkstra_path_length(self.graph, start, end, weight='weight')
             duration = sum(self.graph[u][v]['time'] for u, v in zip(path[:-1], path[1:]))
             return path, cost, duration
+
         except nx.NetworkXNoPath:
             raise ValueError(f"Aucun chemin trouvé entre {start} et {end}")
 
@@ -205,6 +206,7 @@ class UserInterface:
 
     def run(self):
         self.load_data()
+
         aircraft = Aircraft()
         aircraft.select_model()
         self.trajectory_modeler = TrajectoryModeler(self.flight_data, self.airport_coords, aircraft)
@@ -218,6 +220,7 @@ class UserInterface:
                 print(f"TRAJET OPTIMAL: {' → '.join(path)}")
                 print(f"CONSOMMATION TOTALE: {cost:.2f} kg de carburant")
                 print(f"DUREE TOTALE DU CHEMIN: {duration:.2f} heures")
+
                 print("=" * 40 + "\n")
                 m = TrajectoryVisualizer(self.trajectory_modeler.get_graph(), path).plot_trajectory()
                 m.save("map.html")
