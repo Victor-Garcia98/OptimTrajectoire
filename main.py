@@ -1,6 +1,8 @@
 import pandas as pd
 import networkx as nx
+
 import folium
+
 
 
 class DataLoader:
@@ -33,8 +35,10 @@ class TrajectoryModeler:
                 self.graph.add_node(dest, pos=self.airport_coords[dest])
                 self.graph.add_edge(origin, dest, weight=row['DISTANCE IN MILES'])
 
+
     def get_graph(self):
         return self.graph
+
 
 class TrajectoryVisualizer:
     def __init__(self, graph, path=None):
