@@ -1,8 +1,6 @@
 import pandas as pd
 import networkx as nx
-
 import folium
-
 
 
 class DataLoader:
@@ -20,21 +18,63 @@ class DataLoader:
         return flight_data
 
 
+class Aircraft:
+    def __init__(self):
+        self.models = {
+            'A320': {'fuel_burn_kgph': 2406, 'cruise_speed_kts': 447, 'max_fuel_per_flight' : 24456.33},
+            'B777': {'fuel_burn_kgph': 6834, 'cruise_speed_kts': 488, 'max_fuel_per_flight' : 145538},
+            'CRJ9': {'fuel_burn_kgph': 1476, 'cruise_speed_kts': 447, 'max_fuel_per_flight' : 8888},
+            'C56X': {'fuel_burn_kgph': 558, 'cruise_speed_kts': 430, 'max_fuel_per_flight' : 3057.213},
+        }
+        self.selected_model = None
+
+    def select_model(self):
+        print("Modèles d'avions disponibles :")
+        for model in self.models:
+            print(f"- {model}")
+        while True:
+            model = input("Choisissez un modèle d'avion : ").strip().upper()
+            if model in self.models:
+                self.selected_model = model
+                break
+            print("Modèle invalide. Essayez encore.")
+        return self.models[model]
+
+    def get_consumption_per_mile(self):
+        if self.selected_model is None:
+            raise ValueError("Aucun modèle sélectionné.")
+        data = self.models[self.selected_model]
+        speed_knots = data['cruise_speed_kts']
+        fuel_burn_kgph = data['fuel_burn_kgph']
+        speed_mph = speed_knots * 1.15078  # conversion knots → miles/h
+        return fuel_burn_kgph / speed_mph  # kg/mile
+
+
 class TrajectoryModeler:
-    def __init__(self, flight_data, airport_coords):
+    def __init__(self, flight_data, airport_coords, aircraft):
         self.flight_data = flight_data
         self.airport_coords = airport_coords
         self.graph = nx.Graph()
+        self.aircraft = aircraft
 
     def build_graph(self):
+        fuel_per_mile = self.aircraft.get_consumption_per_mile()
+        max_fuel_allowed =0.95 * self.aircraft.models[self.aircraft.selected_model]['max_fuel_per_flight']
+        takeoff_penalty = 300  # kg
+
         for _, row in self.flight_data.iterrows():
             origin = row['ORIGIN']
             dest = row['DEST']
+            distance = row['DISTANCE IN MILES']
             if origin in self.airport_coords and dest in self.airport_coords:
+                fuel_consumption = fuel_per_mile * distance + takeoff_penalty
+                if fuel_consumption > max_fuel_allowed:
+                    continue
+                speed_mph = self.aircraft.models[self.aircraft.selected_model]['cruise_speed_kts'] * 1.15078
+                flight_time = distance / speed_mph
                 self.graph.add_node(origin, pos=self.airport_coords[origin])
                 self.graph.add_node(dest, pos=self.airport_coords[dest])
-                self.graph.add_edge(origin, dest, weight=row['DISTANCE IN MILES'])
-
+                self.graph.add_edge(origin, dest, weight=fuel_consumption, time=flight_time)
 
     def get_graph(self):
         return self.graph
@@ -121,7 +161,9 @@ class TrajectoryOptimizer:
         try:
             path = nx.dijkstra_path(self.graph, start, end, weight='weight')
             cost = nx.dijkstra_path_length(self.graph, start, end, weight='weight')
-            return path, cost
+            duration = sum(self.graph[u][v]['time'] for u, v in zip(path[:-1], path[1:]))
+            return path, cost, duration
+
         except nx.NetworkXNoPath:
             raise ValueError(f"Aucun chemin trouvé entre {start} et {end}")
 
@@ -164,16 +206,21 @@ class UserInterface:
 
     def run(self):
         self.load_data()
-        self.trajectory_modeler = TrajectoryModeler(self.flight_data, self.airport_coords)
+
+        aircraft = Aircraft()
+        aircraft.select_model()
+        self.trajectory_modeler = TrajectoryModeler(self.flight_data, self.airport_coords, aircraft)
         self.trajectory_modeler.build_graph()
         while True:
             start, end = self.select_airports()
             try:
                 optimizer = TrajectoryOptimizer(self.trajectory_modeler.get_graph())
-                path, cost = optimizer.optimize_trajectory(start, end)
+                path, cost, duration = optimizer.optimize_trajectory(start, end)
                 print("\n" + "=" * 40)
                 print(f"TRAJET OPTIMAL: {' → '.join(path)}")
-                print(f"CONSOMMATION TOTALE: {cost} miles")
+                print(f"CONSOMMATION TOTALE: {cost:.2f} kg de carburant")
+                print(f"DUREE TOTALE DU CHEMIN: {duration:.2f} heures")
+
                 print("=" * 40 + "\n")
                 m = TrajectoryVisualizer(self.trajectory_modeler.get_graph(), path).plot_trajectory()
                 m.save("map.html")
