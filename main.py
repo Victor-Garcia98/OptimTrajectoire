@@ -17,12 +17,14 @@ class DataLoader:
         self.airport_coords = dict(zip(airports['IATA'], zip(airports['Lat'], airports['Lon'])))
         return flight_data
 
-
 class Aircraft:
     def __init__(self):
         self.models = {
             'A320': {'fuel_burn_kgph': 2406, 'cruise_speed_kts': 447, 'max_fuel_per_flight' : 24456.33},
             'B777': {'fuel_burn_kgph': 6834, 'cruise_speed_kts': 488, 'max_fuel_per_flight' : 145538},
+            'A380': {'fuel_burn_kgph': 6834, 'cruise_speed_kts': 488, 'max_fuel_per_flight' : 253983},
+            'E195': {'fuel_burn_kgph': 2406, 'cruise_speed_kts': 470, 'max_fuel_per_flight' : 12971},
+            'B737': {'fuel_burn_kgph': 2406, 'cruise_speed_kts': 453, 'max_fuel_per_flight' : 21011.4},
             'CRJ9': {'fuel_burn_kgph': 1476, 'cruise_speed_kts': 447, 'max_fuel_per_flight' : 8888},
             'C56X': {'fuel_burn_kgph': 558, 'cruise_speed_kts': 430, 'max_fuel_per_flight' : 3057.213},
         }
@@ -163,7 +165,6 @@ class TrajectoryOptimizer:
             cost = nx.dijkstra_path_length(self.graph, start, end, weight='weight')
             duration = sum(self.graph[u][v]['time'] for u, v in zip(path[:-1], path[1:]))
             return path, cost, duration
-
         except nx.NetworkXNoPath:
             raise ValueError(f"Aucun chemin trouvé entre {start} et {end}")
 
@@ -206,7 +207,6 @@ class UserInterface:
 
     def run(self):
         self.load_data()
-
         aircraft = Aircraft()
         aircraft.select_model()
         self.trajectory_modeler = TrajectoryModeler(self.flight_data, self.airport_coords, aircraft)
@@ -220,7 +220,6 @@ class UserInterface:
                 print(f"TRAJET OPTIMAL: {' → '.join(path)}")
                 print(f"CONSOMMATION TOTALE: {cost:.2f} kg de carburant")
                 print(f"DUREE TOTALE DU CHEMIN: {duration:.2f} heures")
-
                 print("=" * 40 + "\n")
                 m = TrajectoryVisualizer(self.trajectory_modeler.get_graph(), path).plot_trajectory()
                 m.save("map.html")
