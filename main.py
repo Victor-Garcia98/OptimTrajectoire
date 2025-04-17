@@ -1,6 +1,7 @@
 import pandas as pd
 import networkx as nx
 import folium
+import os
 
 
 class DataLoader:
@@ -223,7 +224,8 @@ class UserInterface:
                 print("=" * 40 + "\n")
                 m = TrajectoryVisualizer(self.trajectory_modeler.get_graph(), path).plot_trajectory()
                 m.save("map.html")
-                print("Carte enregistrée sous 'map.html'. Ouvrez-la dans un navigateur pour la voir.")
+                map_path = os.path.abspath("map.html")
+                print(f"Carte enregistrée sous 'map.html'. Ouvrez-la ici : file://{map_path}")
             except ValueError as e:
                 print(f"\nErreur: {str(e)}\n")
             if input("Voulez-vous faire une autre recherche? (o/n) ").lower() != 'o':
