@@ -2,6 +2,7 @@ import pandas as pd
 import networkx as nx
 import folium
 import os
+from pathlib import Path
 
 
 class DataLoader:
@@ -179,7 +180,8 @@ class UserInterface:
         self.airports = []
 
     def load_data(self):
-        self.flight_data = self.data_loader.load_flight_data("Distance_airports.csv")
+        file_path = Path(__file__).parent / "data" / "Distance_airports.csv"
+        self.flight_data = self.data_loader.load_flight_data(file_path)
         self.airport_coords = self.data_loader.airport_coords
         self._init_airports()
 

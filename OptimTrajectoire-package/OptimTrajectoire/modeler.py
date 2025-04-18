@@ -40,9 +40,8 @@ class TrajectoryModeler:
         """
         Renvoie le graphe construit des aéroports et trajets valides.
 
-        Returns
-        -------
-        networkx.Graph
-            Graphe des trajets valides avec poids en carburant et temps.
+        :return: Graphe des trajets valides avec poids en carburant et temps.
+        :rtype: networkx.Graph
+
         """
         return self.graph
