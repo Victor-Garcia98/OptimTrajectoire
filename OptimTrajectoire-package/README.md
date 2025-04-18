@@ -23,6 +23,8 @@ Puis suivre les indications pour les entrées utilisateurs : choix de l'appareil
 
 le module sortira une carte disponible dans les fichiers du projet python ainsi que au lieu fourni.
 
+Si besoin : exécuter main() pour un résultat similaire
+
 # Documentation 
 
 La documentation est disponible en HTML dans le dossier build
