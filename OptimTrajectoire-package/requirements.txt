@@ -1,0 +1,4 @@
+pandas>=1.0
+networkx>=2.5
+folium>=0.12
+sphinx>=8.2.3
