@@ -2,6 +2,8 @@
 
 Module Python pour optimiser des trajets aériens avec visualisation cartographique.
 
+Calcul le plus court chemin entre deux aéroports grâce à l'algorithme de Dijkstra en prenant en compte la possibilité d'escale malgré une pénalité à chaque décollage et affiche ce trajet idéal sur une carte du monde.
+
 # Installation 
 
 Se placer dans le fichier OptimTrajectoire-package et exécuter la commande : 
