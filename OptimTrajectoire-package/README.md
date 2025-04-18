@@ -12,6 +12,11 @@ python setup.py install
  folium 
  pandas
 
+# Références bases de données 
+
+Distance entre les aéroports via https://www.transtats.bts.gov/Distance.aspx
+Position des aéroports via https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat ( openflight )
+
 # Utilisation 
 
 Le fonctionnement standard s'effectue en exécutant la fonction run() de la class UserInterface
