@@ -18,6 +18,10 @@ Puis suivre les indications pour les entrées utilisateurs : choix de l'appareil
 
 le module sortira une carte disponible dans les fichiers du projet python ainsi que au lieu fourni.
 
+# Documentation 
+
+La documentation est disponible en HTML dans le dossier build
+
 # Librairies requises 
  Networkx
  folium 
