@@ -7,6 +7,11 @@ Module Python pour optimiser des trajets aériens avec visualisation cartographi
 Se placer dans le fichier OptimTrajectoire-package et exécuter la commande : 
 python setup.py install 
 
+# Librairies requises 
+ Networkx
+ folium 
+ pandas
+
 # Utilisation 
 
 Le fonctionnement standard s'effectue en exécutant la fonction run() de la class UserInterface
@@ -22,7 +27,16 @@ le module sortira une carte disponible dans les fichiers du projet python ainsi 
 
 La documentation est disponible en HTML dans le dossier build
 
-# Librairies requises 
- Networkx
- folium 
- pandas
+# Contenu package 
+
+Ce package contient 3 dossiers : 
+OptimTrajectoire qui contient les fichiers python nécéssaire au fonctionnement 
+build qui contient la documentation générée par Sphinx
+source qui contient les fichiers rst si il y a besoin de re-générer la documentation 
+
+La license MIT
+Ce fichier README
+les fichiers setup pour l'installation
+Le fichier requirements pour l'installation rapide des librairies
+
+
