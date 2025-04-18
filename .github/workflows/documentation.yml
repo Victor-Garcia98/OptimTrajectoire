@@ -18,6 +18,10 @@ jobs:
         working-directory: OptimTrajectoire-package
         run: |
           sphinx-build source _build
+
+      - name: Add .nojekyll to disable Jekyll on GitHub Pages
+        run: echo > OptimTrajectoire-package/source/_build/html/.nojekyll
+        
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
